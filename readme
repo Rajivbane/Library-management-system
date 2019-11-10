@@ -1,0 +1,150 @@
+import pickle
+
+class book():
+    l3 = []
+
+    def __init__(self, bid, bn, an, qty, c):
+        self.bid = bid
+        self.bn = bn
+        self.an = an
+        self.qty = qty
+        self.cost = c
+
+    def bookdisp(self):
+        print("{}\t\t{}\t\t{}\t\t{}\t\t{}\n".format(self.bid, self.bn, self.an, self.qty, self.cost))
+        '''f=open('stock1.dat','rb')
+        l3=pickle.load(f,encoding='bytes')
+        for i in l3:
+            print(i)
+        f.close()'''
+
+
+lid = []
+lbn = []
+lan = []
+lq = []
+lcost = []
+flist = []
+
+
+def getDetails():
+    with open('stock1.dat', 'ab') as f:
+        n = int(input("Enter Number Of Books You Want To Enter Into Database:"))
+        for i in range(n):
+            bid = int(input("Enter Book ID:"))
+            lid.append(bid)
+            bn = input("Enter Book Name:")
+            lbn.append(bn)
+            an = input("Enter Author Name:")
+            lan.append(an)
+            q = int(input("Enter Quantity:"))
+            lq.append(q)
+            cost = int(input("Enter Cost:"))
+            lcost.append(cost)
+            b = book(bid, bn, an, q, cost)
+            pickle.dump(b, f)
+        print("All Books Added To Database!")
+
+
+def search():
+    c = -1
+    flag = 0
+    n = int(input("Enter Book ID to search:"))
+    for i in lid:
+        c += 1
+        if (i == n):
+            print("Book ID {} exists".format(n))
+            print("\nBook ID\tName\t\t\tAuthor\t\tQty.\t\tCost\n")
+            print("{}\t\t{}\t\t{}\t\t{}\t\t{}\n".format(lid[c], lbn[c], lan[c], lq[c], lcost[c]))
+            flag = 1
+    if (flag == 0):
+        print("Book with ID:{} doesnt exist".format(n))
+
+
+def deletion():
+    c = -1
+    flag = 0
+    n = int(input("Enter Book ID to delete:"))
+    for i in lid:
+        c += 1
+        if (i == n):
+            a1 = lid.pop(c)
+            a2 = lbn.pop(c)
+            a3 = lan.pop(c)
+            a4 = lq.pop(c)
+            a5 = lcost.pop(c)
+    print("Book ID {} completely deleted!".format(a1))
+    for i in range(0, len(lid)):
+        flist.append(lid[i])
+        flist.append(lbn[i])
+        flist.append(lan[i])
+        flist.append(lq[i])
+        flist.append(lcost[i])
+        with open('stock1.dat', 'wb') as f:
+            pickle.dump(flist, f)
+
+
+def borrow():
+    c = -1
+    n = int(input("Enter Book ID:"))
+    for i in lid:
+        c += 1
+        if i == n:
+            lq[c] = lq[c] - 1
+            break
+    print("Book Borrowed Succesfully!\nDetails are:-\n")
+    print("\nBook ID\t\tName\t\tAuthor\t\tQty.\t\tCost\n")
+    print("{}\t\t{}\t\t{}\t\t{}\t\t{}\n".format(lid[c], lbn[c], lan[c], lq[c], lcost[c]))
+
+
+def return_():
+    c = -1
+    n = int(input("Enter Book ID:"))
+    for i in lid:
+        c += 1
+        if i == n:
+            lq[c] = lq[c] + 1
+            break
+    print("Book Returned Succesfully!\nDetails are:-\n")
+    print("\nBook ID\t\tName\t\tAuthor\t\tQty.\t\tCost\n")
+    print("{}\t\t{}\t\t{}\t\t{}\t\t{}\n".format(lid[c], lbn[c], lan[c], lq[c], lcost[c]))
+
+
+while (True):
+    print("\n")
+    print("-----------------------------------------")
+    print("|   SCIENCE LIBRARY MANAGEMENT SYSTEM   |")
+    print("-----------------------------------------")
+    print("\t\t<MENU>")
+    print("\t\t------")
+    print("1) DISPLAY AVAILABLE BOOKS\n2) BORROW A BOOK\n3) RETURN A BOOK\n"
+          "4) ADD NEW BOOK\n5) SEARCH A BOOK\n6) DELETE A BOOK RECORD\n7) EXIT SYSTEM\n")
+    try:
+        n = int(input("Enter Choice:"))
+        if (n == 1):
+            with open('stock1.dat', 'rb') as f:
+                print("\nBook ID\t\tName\t\t\tAuthor\t\tQty.\t\tCost\n")
+                while (True):
+                    try:
+                        obj = pickle.load(f)
+                        obj.bookdisp()
+                    except EOFError:
+                        print("All Books Displayed, End Of Database!")
+                        break
+        elif (n == 2):
+            borrow()
+        elif (n == 3):
+            return_()
+        elif (n == 4):
+            getDetails()
+        elif (n == 5):
+            search()
+        elif (n == 6):
+            deletion()
+        elif (n == 7):
+            print("Thanks for using the Management System!")
+            break
+        else:
+            print("Please Enter Number Correspondong To Option")
+    except ValueError:
+        print("Provide Correct Input!")
